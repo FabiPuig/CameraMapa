@@ -24,9 +24,10 @@ public class MainActivityFragment extends Fragment {
 
     private Button btFo;
     private Button btVid;
-    private String photoPath;
+    private String multimediaPath;
 
-    private static final int REQUEST_TAKE_PHOTO = 1;
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
+    private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
 
     public MainActivityFragment() {
     }
@@ -52,6 +53,8 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                dispatchTakeVideoIntent();
+
             }
         });
 
@@ -66,38 +69,79 @@ public class MainActivityFragment extends Fragment {
 
             File photoFile = null;
             try{
-                photoFile = creaImatgeFile();
-            }catch ( IOException e) {
+                photoFile = creaTempFile( CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE );
+            }catch ( IOException e ) {
 
             }
             if( photoFile != null ){
+                //nom del fitxer de la imatge
                 takePictureIntent.putExtra( MediaStore.EXTRA_OUTPUT, Uri.fromFile( photoFile ) );
-                startActivityForResult( takePictureIntent, REQUEST_TAKE_PHOTO );
+                startActivityForResult( takePictureIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE );
             }
         }
-
     }
 
-    private File creaImatgeFile() throws IOException{
+    private void dispatchTakeVideoIntent(){
 
-        // Creacio de fitxer de imatge temporal
+        Intent takeVideoIntent = new Intent( MediaStore.ACTION_VIDEO_CAPTURE );
+
+        if( takeVideoIntent.resolveActivity( getContext().getPackageManager() ) != null ){
+
+            File videoFile = null;
+            try{
+                videoFile = creaTempFile( CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE );
+            }catch ( IOException e ){
+            }
+
+            if( videoFile != null ){
+                // nom del fitxer de video
+                takeVideoIntent.putExtra( MediaStore.EXTRA_OUTPUT, Uri.fromFile( videoFile ) );
+                //qualitat alta
+                takeVideoIntent.putExtra( MediaStore.EXTRA_VIDEO_QUALITY, 1 );
+
+                startActivityForResult( takeVideoIntent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE );
+            }
+        }
+    }
+
+    private File creaTempFile( int request_code ) throws IOException{
+
         String timeStamp = new SimpleDateFormat( "yyyyMMdd_HHmmss").format( new Date() );
-        String imatgeFileName = "JPEG_" + timeStamp + "_";
+        String extensio = "";
+        String fileName = "";
+        File storageDir = null;
 
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES );
+        if( request_code == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE ){
+            // Creacio de fitxer de imatge temporal
+            extensio = ".jpg";
+            fileName = "JPEG_" + timeStamp + "_";
 
-        File image = File.createTempFile(
-                imatgeFileName,
-                ".jpg",
+            storageDir = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_PICTURES );
+
+        }
+
+        if ( request_code == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE ){
+            extensio = ".mp4";
+            fileName = "MP4_" + timeStamp + "_";
+
+            storageDir = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_MOVIES );
+
+        }
+
+        File file = File.createTempFile(
+                fileName,
+                extensio,
                 storageDir
         );
 
+
         // Guardar file: path per a usar amb intents ACTION_VIEW
-        photoPath = "file:" + image.getAbsolutePath();
+        multimediaPath = "file:" + file.getAbsolutePath();
 
-        Log.d("DEBBUG-PATH", photoPath);
+        Log.d("DEBBUG-PATH", multimediaPath);
 
-        return image;
+        return file;
     }
 }
