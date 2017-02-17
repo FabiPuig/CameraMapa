@@ -1,9 +1,11 @@
 package com.example.a20464654j.cameramapa;
 
 import android.content.Intent;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,10 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -25,6 +32,11 @@ public class MainActivityFragment extends Fragment {
     private Button btFo;
     private Button btVid;
     private String multimediaPath;
+
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference reference;
+
+    File f;
 
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
@@ -61,6 +73,15 @@ public class MainActivityFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        reference = firebaseDatabase.getReference("path");
+
+        super.onCreate(savedInstanceState);
+    }
+
     private void dispatchTakeFotoIntent(){
 
         Intent takePictureIntent = new Intent( MediaStore.ACTION_IMAGE_CAPTURE );
@@ -77,6 +98,7 @@ public class MainActivityFragment extends Fragment {
                 //nom del fitxer de la imatge
                 takePictureIntent.putExtra( MediaStore.EXTRA_OUTPUT, Uri.fromFile( photoFile ) );
                 startActivityForResult( takePictureIntent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE );
+                f = photoFile;
             }
         }
     }
@@ -100,6 +122,7 @@ public class MainActivityFragment extends Fragment {
                 takeVideoIntent.putExtra( MediaStore.EXTRA_VIDEO_QUALITY, 1 );
 
                 startActivityForResult( takeVideoIntent, CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE );
+                f = videoFile;
             }
         }
     }
@@ -143,5 +166,37 @@ public class MainActivityFragment extends Fragment {
         Log.d("DEBBUG-PATH", multimediaPath);
 
         return file;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if( requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE ){
+
+            if( resultCode == RESULT_OK ){
+                guardaPath();
+            }else{
+                File f = new File( multimediaPath );
+                f.delete();
+            }
+        }
+
+        if( requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE ){
+
+            if( requestCode == RESULT_OK ){
+                guardaPath();
+            }else{
+                File f = new File( multimediaPath );
+                f.delete();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void guardaPath(){
+
+        Gallery ga = new Gallery( multimediaPath, 4.0, 4.0);
+        reference.push().setValue( ga );
+
     }
 }

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "877231045258",
+    "firebase_url": "https://cameramapa.firebaseio.com",
+    "project_id": "cameramapa",
+    "storage_bucket": "cameramapa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:877231045258:android:408b4d143d70d872",
+        "android_client_info": {
+          "package_name": "com.example.a20464654j.cameramapa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "877231045258-o6pm1p6k0s9fl22ba7nlc3v52ag2uplg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.a20464654j.cameramapa",
+            "certificate_hash": "FCEF58564815A5B3B3CF722B41B7A58A0C795CC5"
+          }
+        },
+        {
+          "client_id": "877231045258-kv22baj919c3g0ivl2au0h8oagcrti7h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiX6FLergdFFX1tiDBl9TwGHk7qavGBLM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "877231045258-kv22baj919c3g0ivl2au0h8oagcrti7h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
